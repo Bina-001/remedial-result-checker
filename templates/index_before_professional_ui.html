@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Remedial Result Checker</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eef2f7;
+    color: #172033;
+}
+
+.container {
+    width: 94%;
+    max-width: 1200px;
+    margin: 18px auto;
+}
+
+.header {
+    position: relative;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.header-logo {
+    width: 82px;
+    height: 82px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.header-brand-text h1 {
+    margin: 0;
+}
+
+.header-brand-text p {
+    margin: 6px 0 0;
+}
+    background: #111827;
+    color: white;
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+}
+
+.header h1 {
+    margin: 0 0 5px;
+}
+
+.header p {
+    margin: 0;
+    opacity: .8;
+}
+
+.nav {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.nav button {
+    background: #374151;
+    color: white;
+}
+
+.nav button.active {
+    background: #2563eb;
+}
+
+.card {
+    background: white;
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+
+.hidden {
+    display: none !important;
+}
+
+button,
+.export-link {
+    border: 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    margin: 3px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+}
+
+button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.success {
+    background: #15803d;
+}
+
+.warning {
+    background: #d97706;
+}
+
+.purple {
+    background: #7c3aed;
+}
+
+.danger {
+    background: #dc2626;
+}
+
+.secondary {
+    background: #4b5563;
+}
+
+.export-link {
+    background: #111827;
+    color: white;
+}
+
+.summary-grid,
+.stat-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(120px, 1fr));
+    gap: 9px;
+}
+
+.summary-box,
+.stat-box {
+    background: #f3f4f6;
+    padding: 13px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.summary-number {
+    display: block;
+    font-size: 23px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.progress-container {
+    height: 18px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: #2563eb;
+    transition: width .25s;
+}
+
+#progressText {
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+.control-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.speed-select,
+.search-input {
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+}
+
+.search-input {
+    width: 100%;
+}
+
+.status-line,
+.search-result {
+    background: #eef2ff;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+}
+
+th,
+td {
+    padding: 9px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+th {
+    background: #111827;
+    color: white;
+}
+
+.status-pass {
+    color: #15803d;
+    font-weight: bold;
+}
+
+.status-fail {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.status-disqualified {
+    color: #d97706;
+    font-weight: bold;
+}
+
+.status-error {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.small-button {
+    padding: 6px 9px;
+    font-size: 12px;
+    background: #7c3aed;
+}
+
+.message {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background: #eef2ff;
+    border-radius: 8px;
+}
+
+.history-item {
+    border: 1px solid #e5e7eb;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 9px;
+    background: #fafafa;
+}
+
+.history-item h3 {
+    margin: 0 0 7px;
+}
+
+.history-meta {
+    color: #6b7280;
+    font-size: 13px;
+    margin-bottom: 9px;
+}
+
+.current-history {
+    border-left: 5px solid #2563eb;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    padding: 15px;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 550px;
+    max-height: 88vh;
+    overflow-y: auto;
+    margin: 4% auto;
+    padding: 18px;
+    border-radius: 14px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subject-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 11px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.student-info {
+    background: #f3f4f6;
+    padding: 12px;
+    border-radius: 9px;
+    margin: 12px 0;
+}
+
+.total-box {
+    display: flex;
+    justify-content: space-between;
+    background: #111827;
+    color: white;
+    padding: 13px;
+    margin-top: 14px;
+    border-radius: 9px;
+    font-weight: bold;
+}
+
+.search-counts {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.count-box {
+    background: #f3f4f6;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.count-box strong {
+    display: block;
+    font-size: 20px;
+    margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 95%;
+        margin: 10px auto;
+    }
+
+    button,
+    .export-link {
+        width: 100%;
+        margin: 3px 0;
+    }
+
+    .control-row {
+        display: block;
+    }
+
+    .speed-select {
+        width: 100%;
+        margin-bottom: 6px;
+    }
+
+    .modal-content {
+        margin: 8% auto;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div class="header-brand">
+    <img
+        src="/static/logo.png"
+        alt="Remedial Result Checker logo"
+        class="header-logo"
+    >
+
+    <div class="header-brand-text">
+        <h1>Remedial Result Checker</h1>
+        <p>Fast • Simple • Reliable Result Checking</p>
+    </div>
+</div>
+
+<div class="nav">
+
+<button
+    id="tabChecker"
+    class="active"
+    onclick="showTab('checker')"
+>
+Checker
+</button>
+
+<button
+    id="tabHistory"
+    onclick="showTab('history')"
+>
+History
+</button>
+
+<button
+    id="tabSearch"
+    onclick="showTab('search')"
+>
+Search
+</button>
+
+</div>
+
+</div>
+
+
+<div id="checkerTab">
+
+
+<div class="card">
+
+<h2>Upload Student Roster</h2>
+
+<input
+    type="file"
+    id="fileInput"
+    accept=".xlsx,.csv"
+>
+
+<button onclick="uploadRoster()">
+Upload New Roster
+</button>
+
+<div
+    id="message"
+    class="message"
+></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Current History</h2>
+
+<div id="currentHistoryName">
+No history selected.
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Summary</h2>
+
+<div class="summary-grid">
+
+<div class="summary-box">
+Total
+<span id="total" class="summary-number">0</span>
+</div>
+
+<div class="summary-box">
+Ready
+<span id="ready" class="summary-number">0</span>
+</div>
+
+<div class="summary-box">
+Missing
+<span id="missing" class="summary-number">0</span>
+</div>
+
+<div class="summary-box">
+Completed
+<span id="completed" class="summary-number">0</span>
+</div>
+
+<div class="summary-box">
+Remaining
+<span id="remaining" class="summary-number">0</span>
+</div>
+
+<div class="summary-box">
+PASS
+<span id="pass" class="summary-number">0</span>
+</div>
+
+<div class="summary-box">
+FAIL
+<span id="fail" class="summary-number">0</span>
+</div>
+
+<div class="summary-box">
+Disqualified
+<span id="disqualified" class="summary-number">0</span>
+</div>
+
+<div class="summary-box">
+Error
+<span id="error" class="summary-number">0</span>
+</div>
+
+</div>
+
+<div class="progress-container">
+
+<div
+    id="progressBar"
+    class="progress-bar"
+></div>
+
+</div>
+
+<div id="progressText">
+0%
+</div>
+
+<div
+    id="currentStatus"
+    class="status-line"
+>
+Ready.
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Checking Controls</h2>
+
+<div class="control-row">
+
+<select
+    id="speedSelect"
+    class="speed-select"
+>
+
+<option value="5000">
+Safe
+</option>
+
+<option value="8000" selected>
+Normal
+</option>
+
+<option value="12000">
+Extra Safe
+</option>
+
+</select>
+
+<button
+    id="testButton"
+    onclick="testOneStudent()"
+    disabled
+>
+Test One Student
+</button>
+
+<button
+    id="checkButton"
+    class="success"
+    onclick="checkAllStudents()"
+    disabled
+>
+Check All Students
+</button>
+
+<button
+    id="pauseButton"
+    class="warning"
+    onclick="togglePause()"
+    disabled
+>
+Pause
+</button>
+
+<button
+    id="resumeButton"
+    class="purple"
+    onclick="resumeChecking()"
+    disabled
+>
+Resume Checking
+</button>
+
+</div>
+
+<br>
+
+<a
+    class="export-link"
+    href="/export/csv"
+>
+Export CSV
+</a>
+
+<a
+    class="export-link"
+    href="/export/xlsx"
+>
+Export Excel
+</a>
+
+</div>
+
+
+<div class="card">
+
+<h2>Results</h2>
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+<th>No.</th>
+<th>Username</th>
+<th>Name</th>
+<th>Institution</th>
+<th>Stream</th>
+<th>Status</th>
+<th>Score</th>
+<th>Subjects</th>
+<th>Message</th>
+</tr>
+
+</thead>
+
+<tbody id="resultsBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="historyTab" class="hidden">
+
+<div class="card">
+
+<h2>History</h2>
+
+<p>
+Every uploaded roster is saved as a separate history.
+Old histories are not deleted when a new roster is uploaded.
+</p>
+
+<div id="historyList">
+Loading history...
+</div>
+
+</div>
+
+</div>
+
+
+<div id="searchTab" class="hidden">
+
+<div class="card">
+
+<h2>Search Student</h2>
+
+<p>
+Enter the full username to load the saved result.
+</p>
+
+<input
+    id="studentSearchInput"
+    class="search-input"
+    type="text"
+    placeholder="Enter full username..."
+>
+
+<button
+    onclick="searchStudent()"
+>
+Search
+</button>
+
+<div
+    id="searchResult"
+    class="search-result hidden"
+></div>
+
+</div>
+
+</div>
+
+
+<div
+    id="subjectsModal"
+    class="modal"
+>
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h2>Subject Results</h2>
+
+<button
+    class="danger"
+    onclick="closeSubjects()"
+>
+Close
+</button>
+
+</div>
+
+<div
+    id="studentInfo"
+    class="student-info"
+></div>
+
+<div id="subjectsList"></div>
+
+<div
+    id="totalBox"
+    class="total-box"
+></div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let students = [];
+let results = [];
+
+let isPaused = false;
+let isChecking = false;
+
+
+function showMessage(text) {
+
+    const element =
+        document.getElementById("message");
+
+    element.textContent = text;
+    element.style.display = "block";
+}
+
+
+function setCurrentStatus(text) {
+
+    document.getElementById(
+        "currentStatus"
+    ).textContent = text;
+}
+
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function getDelay() {
+
+    return Number(
+        document.getElementById(
+            "speedSelect"
+        ).value
+    );
+}
+
+
+function wait(ms) {
+
+    return new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
+}
+
+
+async function waitIfPaused() {
+
+    while (isPaused) {
+
+        setCurrentStatus(
+            "Paused. Press Continue to continue."
+        );
+
+        await wait(500);
+    }
+}
+
+
+function showTab(tab) {
+
+    const checker =
+        document.getElementById("checkerTab");
+
+    const history =
+        document.getElementById("historyTab");
+
+    const search =
+        document.getElementById("searchTab");
+
+    const tabChecker =
+        document.getElementById("tabChecker");
+
+    const tabHistory =
+        document.getElementById("tabHistory");
+
+    const tabSearch =
+        document.getElementById("tabSearch");
+
+    checker.classList.add("hidden");
+    history.classList.add("hidden");
+    search.classList.add("hidden");
+
+    tabChecker.classList.remove("active");
+    tabHistory.classList.remove("active");
+    tabSearch.classList.remove("active");
+
+    if (tab === "checker") {
+
+        checker.classList.remove("hidden");
+        tabChecker.classList.add("active");
+
+    } else if (tab === "history") {
+
+        history.classList.remove("hidden");
+        tabHistory.classList.add("active");
+
+        loadHistory();
+
+    } else if (tab === "search") {
+
+        search.classList.remove("hidden");
+        tabSearch.classList.add("active");
+
+    }
+}
+
+
+async function uploadRoster() {
+
+    const input =
+        document.getElementById("fileInput");
+
+    if (!input.files.length) {
+
+        showMessage(
+            "Please select a CSV or XLSX file."
+        );
+
+        return;
+    }
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "file",
+        input.files[0]
+    );
+
+    showMessage(
+        "Uploading new roster and creating history..."
+    );
+
+    try {
+
+        const response =
+            await fetch("/upload", {
+                method: "POST",
+                body: formData
+            });
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            showMessage(
+                data.message ||
+                "Upload failed."
+            );
+
+            return;
+        }
+
+        await loadStudents();
+        await loadSavedResults();
+        await updateSummary();
+        await updateCurrentHistory();
+
+        enableButtons();
+
+        showMessage(
+            "New history created. " +
+            data.ready_students +
+            " students are ready."
+        );
+
+        showTab("checker");
+
+    } catch (error) {
+
+        showMessage(
+            "Upload error: " +
+            error.message
+        );
+    }
+}
+
+
+async function loadStudents() {
+
+    try {
+
+        const response =
+            await fetch("/students");
+
+        const data =
+            await response.json();
+
+        if (data.success) {
+
+            students =
+                data.students || [];
+        }
+
+    } catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+async function loadSavedResults() {
+
+    try {
+
+        const response =
+            await fetch("/results");
+
+        const data =
+            await response.json();
+
+        if (data.success) {
+
+            results =
+                data.results || [];
+
+            renderResults();
+        }
+
+    } catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+function enableButtons() {
+
+    document.getElementById(
+        "testButton"
+    ).disabled = false;
+
+    document.getElementById(
+        "checkButton"
+    ).disabled = false;
+
+    document.getElementById(
+        "resumeButton"
+    ).disabled = false;
+}
+
+
+async function updateSummary() {
+
+    try {
+
+        const response =
+            await fetch("/summary");
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+            return;
+        }
+
+        document.getElementById("total").textContent =
+            data.total;
+
+        document.getElementById("ready").textContent =
+            data.ready;
+
+        document.getElementById("missing").textContent =
+            data.missing_usernames;
+
+        document.getElementById("completed").textContent =
+            data.completed;
+
+        document.getElementById("remaining").textContent =
+            data.remaining;
+
+        document.getElementById("pass").textContent =
+            data.pass;
+
+        document.getElementById("fail").textContent =
+            data.fail;
+
+        document.getElementById("disqualified").textContent =
+            data.disqualified;
+
+        document.getElementById("error").textContent =
+            data.error;
+
+        const percent =
+            data.ready > 0
+                ? Math.round(
+                    (
+                        data.completed /
+                        data.ready
+                    ) * 100
+                )
+                : 0;
+
+        document.getElementById(
+            "progressBar"
+        ).style.width =
+            percent + "%";
+
+        document.getElementById(
+            "progressText"
+        ).textContent =
+            percent + "%";
+
+    } catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+async function updateCurrentHistory() {
+
+    try {
+
+        const response =
+            await fetch("/history");
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+            return;
+        }
+
+        const current =
+            data.histories.find(
+                item => item.is_current
+            );
+
+        if (current) {
+
+            document.getElementById(
+                "currentHistoryName"
+            ).innerHTML = `
+                <strong>
+                    ${escapeHtml(current.name)}
+                </strong>
+                <br>
+                Students:
+                ${current.total_students}
+                |
+                Checked:
+                ${current.checked}
+            `;
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+function getStatusClass(status) {
+
+    const value =
+        String(status || "")
+        .toLowerCase();
+
+    if (value === "pass") {
+        return "status-pass";
+    }
+
+    if (value === "fail") {
+        return "status-fail";
+    }
+
+    if (value === "disqualified") {
+        return "status-disqualified";
+    }
+
+    if (value === "error") {
+        return "status-error";
+    }
+
+    return "";
+}
+
+
+function renderResults() {
+
+    const body =
+        document.getElementById(
+            "resultsBody"
+        );
+
+    body.innerHTML = "";
+
+    results.forEach(
+        (result, index) => {
+
+            let subjectsButton =
+                "<span>No data</span>";
+
+            if (
+                Array.isArray(
+                    result.subjects
+                ) &&
+                result.subjects.length > 0
+            ) {
+
+                subjectsButton = `
+                    <button
+                        class="small-button"
+                        onclick="viewSubjects(${index})"
+                    >
+                        View Subjects
+                    </button>
+                `;
+            }
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+            row.innerHTML = `
+                <td>${index + 1}</td>
+
+                <td>
+                    ${escapeHtml(
+                        result.username
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        result.full_name
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        result.institution
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        result.stream
+                    )}
+                </td>
+
+                <td
+                    class="${getStatusClass(
+                        result.status
+                    )}"
+                >
+                    ${escapeHtml(
+                        result.status
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        result.score
+                    )}
+                </td>
+
+                <td>
+                    ${subjectsButton}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        result.message
+                    )}
+                </td>
+            `;
+
+            body.appendChild(row);
+        }
+    );
+}
+
+
+async function loadHistory() {
+
+    const list =
+        document.getElementById(
+            "historyList"
+        );
+
+    list.innerHTML =
+        "Loading history...";
+
+    try {
+
+        const response =
+            await fetch("/history");
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            list.innerHTML =
+                "Unable to load history.";
+
+            return;
+        }
+
+        if (!data.histories.length) {
+
+            list.innerHTML =
+                "No history found.";
+
+            return;
+        }
+
+        list.innerHTML = "";
+
+        data.histories.forEach(
+            history => {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+                item.className =
+                    "history-item";
+
+                if (history.is_current) {
+
+                    item.classList.add(
+                        "current-history"
+                    );
+                }
+
+                item.innerHTML = `
+                    <h3>
+                        ${escapeHtml(
+                            history.name
+                        )}
+                    </h3>
+
+                    <div class="history-meta">
+                        Created:
+                        ${escapeHtml(
+                            history.created_at
+                        )}
+                        <br>
+                        Students:
+                        ${history.total_students}
+                        |
+                        Checked:
+                        ${history.checked}
+                    </div>
+
+                    ${
+                        history.is_current
+                        ? `
+                            <button
+                                disabled
+                            >
+                                Current History
+                            </button>
+                        `
+                        : `
+                            <button
+                                onclick="openHistory(
+                                    '${escapeHtml(
+                                        history.id
+                                    )}'
+                                )"
+                            >
+                                Open History
+                            </button>
+                        `
+                    }
+                `;
+
+                list.appendChild(item);
+            }
+        );
+
+    } catch (error) {
+
+        list.innerHTML =
+            "History error: " +
+            escapeHtml(
+                error.message
+            );
+    }
+}
+
+
+async function openHistory(historyId) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/history/" +
+                encodeURIComponent(
+                    historyId
+                )
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            alert(
+                data.message ||
+                "Unable to open history."
+            );
+
+            return;
+        }
+
+        students =
+            data.students || [];
+
+        results =
+            data.results || [];
+
+        renderResults();
+
+        await updateSummary();
+        await updateCurrentHistory();
+
+        enableButtons();
+
+        showTab("checker");
+
+        showMessage(
+            "History loaded successfully. " +
+            "Saved results will be used."
+        );
+
+    } catch (error) {
+
+        alert(
+            "History error: " +
+            error.message
+        );
+    }
+}
+
+
+async function searchStudent() {
+
+    const input =
+        document.getElementById(
+            "studentSearchInput"
+        );
+
+    const username =
+        input.value.trim();
+
+    const box =
+        document.getElementById(
+            "searchResult"
+        );
+
+    if (!username) {
+
+        box.classList.remove(
+            "hidden"
+        );
+
+        box.innerHTML =
+            "Please enter the full username.";
+
+        return;
+    }
+
+    box.classList.remove(
+        "hidden"
+    );
+
+    box.innerHTML =
+        "Searching saved history...";
+
+    try {
+
+        const response =
+            await fetch(
+                "/search?username=" +
+                encodeURIComponent(
+                    username
+                )
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            box.innerHTML =
+                escapeHtml(
+                    data.message
+                );
+
+            return;
+        }
+
+        if (!data.found) {
+
+            box.innerHTML = `
+                <strong>
+                    Student not found
+                </strong>
+                <br><br>
+                ${escapeHtml(
+                    data.message
+                )}
+            `;
+
+            return;
+        }
+
+        if (data.checked) {
+
+            const result =
+                data.result;
+
+            const status =
+                escapeHtml(
+                    result.status
+                );
+
+            box.innerHTML = `
+                <h3>
+                    Result Found
+                </h3>
+
+                <strong>
+                    Username:
+                </strong>
+                ${escapeHtml(
+                    result.username
+                )}
+                <br>
+
+                <strong>
+                    Name:
+                </strong>
+                ${escapeHtml(
+                    result.full_name
+                )}
+                <br>
+
+                <strong>
+                    Institution:
+                </strong>
+                ${escapeHtml(
+                    result.institution
+                )}
+                <br>
+
+                <strong>
+                    Stream:
+                </strong>
+                ${escapeHtml(
+                    result.stream
+                )}
+                <br><br>
+
+                <strong>
+                    Status:
+                </strong>
+                ${status}
+                <br>
+
+                <strong>
+                    Score:
+                </strong>
+                ${escapeHtml(
+                    result.score
+                )}
+                <br>
+
+                <strong>
+                    Checked:
+                </strong>
+                ${escapeHtml(
+                    result.checked_at ||
+                    "Saved result"
+                )}
+                <br><br>
+
+                <strong>
+                    Message:
+                </strong>
+                ${escapeHtml(
+                    result.message
+                )}
+            `;
+
+        } else {
+
+            box.innerHTML = `
+                <h3>
+                    Student Found
+                </h3>
+
+                <strong>
+                    Username:
+                </strong>
+                ${escapeHtml(
+                    data.student.username
+                )}
+                <br><br>
+
+                <strong>
+                    Status:
+                </strong>
+                Not checked yet.
+            `;
+        }
+
+    } catch (error) {
+
+        box.innerHTML =
+            "Search error: " +
+            escapeHtml(
+                error.message
+            );
+    }
+}
+
+
+async function checkOne(username) {
+
+    const response =
+        await fetch(
+            "/check",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    username:
+                        username
+                })
+            }
+        );
+
+    return await response.json();
+}
+
+
+async function testOneStudent() {
+
+    const readyStudents =
+        students.filter(
+            student =>
+                student.username
+        );
+
+    if (!readyStudents.length) {
+
+        showMessage(
+            "No student with a username was found."
+        );
+
+        return;
+    }
+
+    const username =
+        readyStudents[0].username;
+
+    setCurrentStatus(
+        "Testing: " +
+        username
+    );
+
+    try {
+
+        const result =
+            await checkOne(
+                username
+            );
+
+        await loadSavedResults();
+        await updateSummary();
+        await updateCurrentHistory();
+
+        if (result.cached) {
+
+            showMessage(
+                "This student was already checked. " +
+                "Saved result loaded from history."
+            );
+
+        } else if (result.success) {
+
+            showMessage(
+                "Test completed and saved to history."
+            );
+
+        } else {
+
+            showMessage(
+                "Test result: " +
+                result.message
+            );
+        }
+
+    } catch (error) {
+
+        showMessage(
+            "Test error: " +
+            error.message
+        );
+    }
+}
+
+
+function togglePause() {
+
+    if (!isChecking) {
+        return;
+    }
+
+    isPaused =
+        !isPaused;
+
+    const button =
+        document.getElementById(
+            "pauseButton"
+        );
+
+    if (isPaused) {
+
+        button.textContent =
+            "Continue";
+
+        button.className =
+            "success";
+
+        setCurrentStatus(
+            "Paused."
+        );
+
+    } else {
+
+        button.textContent =
+            "Pause";
+
+        button.className =
+            "warning";
+
+        setCurrentStatus(
+            "Continuing..."
+        );
+    }
+}
+
+
+async function runChecking(
+    studentList,
+    mode
+) {
+
+    if (!studentList.length) {
+
+        showMessage(
+            "No students to check."
+        );
+
+        return;
+    }
+
+    isChecking = true;
+    isPaused = false;
+
+    const pauseButton =
+        document.getElementById(
+            "pauseButton"
+        );
+
+    const checkButton =
+        document.getElementById(
+            "checkButton"
+        );
+
+    const resumeButton =
+        document.getElementById(
+            "resumeButton"
+        );
+
+    pauseButton.disabled =
+        false;
+
+    checkButton.disabled =
+        true;
+
+    resumeButton.disabled =
+        true;
+
+    for (
+        let index = 0;
+        index < studentList.length;
+        index++
+    ) {
+
+        await waitIfPaused();
+
+        const student =
+            studentList[index];
+
+        const username =
+            student.username;
+
+        setCurrentStatus(
+            mode +
+            ": checking " +
+            username +
+            " (" +
+            (index + 1) +
+            "/" +
+            studentList.length +
+            ")"
+        );
+
+        try {
+
+            const result =
+                await checkOne(
+                    username
+                );
+
+            if (
+                result.cached
+            ) {
+
+                setCurrentStatus(
+                    username +
+                    " already checked. " +
+                    "Loaded from history."
+                );
+
+            } else if (
+                result.status === "ERROR"
+            ) {
+
+                setCurrentStatus(
+                    "Error for " +
+                    username +
+                    ". Waiting before continuing..."
+                );
+
+                await wait(15000);
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            await wait(5000);
+        }
+
+        const percent =
+            Math.round(
+                (
+                    (index + 1) /
+                    studentList.length
+                ) * 100
+            );
+
+        document.getElementById(
+            "progressBar"
+        ).style.width =
+            percent + "%";
+
+        document.getElementById(
+            "progressText"
+        ).textContent =
+            mode +
+            ": " +
+            percent +
+            "% (" +
+            (index + 1) +
+            "/" +
+            studentList.length +
+            ")";
+
+        await loadSavedResults();
+        await updateSummary();
+        await updateCurrentHistory();
+
+        await wait(
+            getDelay()
+        );
+    }
+
+    isChecking =
+        false;
+
+    isPaused =
+        false;
+
+    pauseButton.disabled =
+        true;
+
+    checkButton.disabled =
+        false;
+
+    resumeButton.disabled =
+        false;
+
+    setCurrentStatus(
+        mode +
+        " completed."
+    );
+
+    showMessage(
+        mode +
+        " checking completed and saved."
+    );
+}
+
+
+async function checkAllStudents() {
+
+    const readyStudents =
+        students.filter(
+            student =>
+                student.username
+        );
+
+    await runChecking(
+        readyStudents,
+        "Checking"
+    );
+}
+
+
+async function resumeChecking() {
+
+    if (isChecking) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                "/resume"
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            showMessage(
+                "Resume failed."
+            );
+
+            return;
+        }
+
+        if (!data.students.length) {
+
+            await updateSummary();
+
+            showMessage(
+                "There are no remaining students to check."
+            );
+
+            return;
+        }
+
+        await runChecking(
+            data.students,
+            "Resume"
+        );
+
+    } catch (error) {
+
+        showMessage(
+            "Resume error: " +
+            error.message
+        );
+    }
+}
+
+
+function viewSubjects(index) {
+
+    const result =
+        results[index];
+
+    if (!result) {
+        return;
+    }
+
+    document.getElementById(
+        "studentInfo"
+    ).innerHTML = `
+        <strong>Name:</strong>
+        ${escapeHtml(
+            result.full_name
+        )}
+        <br>
+
+        <strong>Username:</strong>
+        ${escapeHtml(
+            result.username
+        )}
+        <br>
+
+        <strong>Institution:</strong>
+        ${escapeHtml(
+            result.institution
+        )}
+        <br>
+
+        <strong>Stream:</strong>
+        ${escapeHtml(
+            result.stream
+        )}
+    `;
+
+    const list =
+        document.getElementById(
+            "subjectsList"
+        );
+
+    list.innerHTML = "";
+
+    const subjects =
+        result.subjects || [];
+
+    subjects.forEach(
+        subject => {
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "subject-row";
+
+            row.innerHTML = `
+                <span>
+                    ${escapeHtml(
+                        subject.name
+                    )}
+                </span>
+
+                <strong>
+                    ${escapeHtml(
+                        subject.score
+                    )}
+                </strong>
+            `;
+
+            list.appendChild(row);
+        }
+    );
+
+    document.getElementById(
+        "totalBox"
+    ).innerHTML = `
+        <span>Total</span>
+        <span>
+            ${escapeHtml(
+                result.score
+            )}
+        </span>
+    `;
+
+    document.getElementById(
+        "subjectsModal"
+    ).style.display =
+        "block";
+}
+
+
+function closeSubjects() {
+
+    document.getElementById(
+        "subjectsModal"
+    ).style.display =
+        "none";
+}
+
+
+window.onclick =
+    function(event) {
+
+        const modal =
+            document.getElementById(
+                "subjectsModal"
+            );
+
+        if (
+            event.target === modal
+        ) {
+
+            closeSubjects();
+        }
+    };
+
+
+async function initialize() {
+
+    await loadStudents();
+    await loadSavedResults();
+    await updateSummary();
+    await updateCurrentHistory();
+
+    if (students.length) {
+
+        enableButtons();
+    }
+}
+
+
+initialize();
+
+</script>
+
+</body>
+
+</html>

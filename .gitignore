@@ -1,0 +1,14 @@
+results.json
+history.json
+results_backup.json
+*.xlsx
+*.xls
+*.csv
+.env
+__pycache__/
+*.pyc
+.venv/
+checker_before_*.py
+ministry_main.js
+ministry_page.html
+nano
